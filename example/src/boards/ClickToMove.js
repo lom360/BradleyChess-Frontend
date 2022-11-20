@@ -3,7 +3,7 @@ import Chess from 'chess.js';
 
 import { Chessboard } from 'react-chessboard';
 
-export default function ClickToMove({ boardWidth }) {
+export default function ClickToMove({bestMove, hello}) {
   const chessboardRef = useRef();
   const [game, setGame] = useState(new Chess());
 
@@ -47,21 +47,22 @@ export default function ClickToMove({ boardWidth }) {
     setOptionSquares(newSquares);
   }
 
-  function makeRandomMove() {
-    const possibleMoves = game.moves();
+  // function makeRandomMove() {
+  //   console.log({test});
+  //   console.log({hello});
+  //   const possibleMoves = game.moves();
 
-    // exit if the game is over
-    if (game.game_over() || game.in_draw() || possibleMoves.length === 0) return;
+  //   // exit if the game is over
+  //   if (game.game_over() || game.in_draw() || possibleMoves.length === 0) return;
 
-    const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-    safeGameMutate((game) => {
-      game.move(possibleMoves[randomIndex]);
-    });
-  }
+  //   const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+  //   safeGameMutate((game) => {
+  //     game.move(possibleMoves[randomIndex]);
+  //   });
+  // }
 
   function onSquareClick(square) {
     setRightClickedSquares({});
-
     function resetFirstMove(square) {
       setMoveFrom(square);
       getMoveOptions(square);
@@ -88,7 +89,7 @@ export default function ClickToMove({ boardWidth }) {
       return;
     }
 
-    setTimeout(makeRandomMove, 300);
+    // setTimeout(makeRandomMove, 300);
     setMoveFrom('');
     setOptionSquares({});
   }
@@ -104,13 +105,24 @@ export default function ClickToMove({ boardWidth }) {
     });
   }
 
+  function nextMove(square) {
+    const colour = 'rgba(0, 0, 255, 0.4)';
+    setRightClickedSquares({
+      ...rightClickedSquares,
+      [{bestMove}]:
+        rightClickedSquares[{bestMove}] && rightClickedSquares[{bestMove}].backgroundColor === colour
+          ? undefined
+          : { backgroundColor: colour }
+    });
+  }
+
   return (
     <div>
       <Chessboard
         id="ClickToMove"
         animationDuration={200}
         arePiecesDraggable={false}
-        boardWidth={boardWidth}
+        // boardWidth={boardWidth}
         position={game.fen()}
         onSquareClick={onSquareClick}
         onSquareRightClick={onSquareRightClick}
@@ -125,7 +137,7 @@ export default function ClickToMove({ boardWidth }) {
         }}
         ref={chessboardRef}
       />
-      <button
+      {/* <button
         className="rc-button"
         onClick={() => {
           safeGameMutate((game) => {
@@ -137,8 +149,8 @@ export default function ClickToMove({ boardWidth }) {
         }}
       >
         reset
-      </button>
-      <button
+      </button> */}
+      {/* <button
         className="rc-button"
         onClick={() => {
           safeGameMutate((game) => {
@@ -149,7 +161,7 @@ export default function ClickToMove({ boardWidth }) {
         }}
       >
         undo
-      </button>
+      </button> */}
     </div>
   );
 }
