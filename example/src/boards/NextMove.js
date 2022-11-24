@@ -18,12 +18,13 @@ export class NextMove extends React.Component {
 		this.state = {
 			moveList: [],
 			playerMessage: '',
-			bestMove: 'e4',
+			bestMove: '',
             fieldWhite: '',
 			fieldBlack: '',
 			gameStarted: false,
 			toggleTurn: true,
-			isBlackTurn: true,
+			isBlackTurn: false,
+			fenString: '',
 			asciiBoard: ''
 			// width: 530,
 			// height: 315,
@@ -52,6 +53,7 @@ export class NextMove extends React.Component {
 							   gameStarted: data.gameStarted,
 							   bestMove: data.best_move,
 							   fieldWhite: data.best_move,
+							   fenString: data.fen_string,
 							   asciiBoard: data.ascii
 							   })
 			})
@@ -118,8 +120,9 @@ export class NextMove extends React.Component {
 		  })
 		.then(res => { 
 			if (res.ok) {
-			  this.setState({toggleTurn: !this.state.toggleTurn,
-							 isBlackTurn: !this.state.isBlackTurn,
+			  this.setState({
+							//  toggleTurn: !this.state.toggleTurn,
+							//  isBlackTurn: !this.state.isBlackTurn,
 							 fieldBlack: ''
 							});////
 			  this.getMoves();
@@ -149,8 +152,9 @@ export class NextMove extends React.Component {
 							   bestMove: data.best_move,
 							   asciiBoard: data.ascii
 							   })
-				if(!this.state.isBlackTurn) this.setState({fieldBlack: data.best_move});
-				else this.setState({fieldWhite: data.best_move});
+				// if(!this.state.isBlackTurn) this.setState({fieldBlack: data.best_move});
+				// else this.setState({fieldWhite: data.best_move});
+				this.setState({fieldWhite: data.best_move});
 			})
 		);
 	}
@@ -249,6 +253,7 @@ export class NextMove extends React.Component {
 				{this.state.bestMove}
 				<br/>
 				{/* {this.state.asciiBoard} */}
+				{this.state.fenString}
                 <table>
                     <tr>
                         <td>{piece[0]}</td>
