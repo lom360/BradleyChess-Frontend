@@ -11,16 +11,19 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mui/material": "^5.10.13",
     "@material/textfield": "^14.0.0",
-    "mui-button": "^1.0.8",
-    "js-cookie": "^3.0.1",
-    "react-toastify": "^9.1.1",
+    "@mui/material": "^5.10.13",
     "chess.js": "^0.12.0",
+    "classnames": "^2.3.2",
+    "js-cookie": "^3.0.1",
+    "mui-button": "^1.0.8",
     "react": "^18.2.0",
     "react-chessboard": "file:../package",
+    "react-dnd": "^16.0.1",
     "react-dom": "^18.2.0",
-    "react-scripts": "^5.0.1"
+    "react-fen-chess-board": "^1.0.1",
+    "react-scripts": "^5.0.1",
+    "react-toastify": "^9.1.1"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

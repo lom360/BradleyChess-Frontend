@@ -3,6 +3,8 @@ import Chess from 'chess.js';
 
 import { Chessboard } from 'react-chessboard';
 
+import React from "react";
+
 export default function ClickToMove({bestMove, hello}) {
   const chessboardRef = useRef();
   const [game, setGame] = useState(new Chess());
@@ -118,6 +120,7 @@ export default function ClickToMove({bestMove, hello}) {
 
   return (
     <div>
+
       <Chessboard
         id="ClickToMove"
         animationDuration={200}

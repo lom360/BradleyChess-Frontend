@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 
 import NextMove from "./boards/NextMove";
 
+
 import "./index.css";
 
 function App() {

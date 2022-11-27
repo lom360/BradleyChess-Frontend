@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react"
 import ReactDOM from "react-dom/client";
-
 import Button from '@mui/material/Button';
 import { ToastContainer, toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 // import { Link } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import ClickToMove from "./ClickToMove";
-import { Chessboard } from "react-chessboard";
+// import { Chessboard } from "react-chessboard";
+import {ChessBoard} from "react-fen-chess-board";
+import {render} from "react-dom";
 // import { responsiveFontSizes } from "@mui/material";
 // import {DataGrid} from '@mui/x-data-grid';
 // import { FaLess } from "react-icons/fa";
@@ -22,9 +23,8 @@ export class NextMove extends React.Component {
             fieldWhite: '',
 			fieldBlack: '',
 			gameStarted: false,
-			toggleTurn: true,
-			isBlackTurn: false,
-			fenString: '',
+			// toggleTurn: true,
+			isBlackTurn: true,
 			asciiBoard: ''
 			// width: 530,
 			// height: 315,
@@ -53,7 +53,6 @@ export class NextMove extends React.Component {
 							   gameStarted: data.gameStarted,
 							   bestMove: data.best_move,
 							   fieldWhite: data.best_move,
-							   fenString: data.fen_string,
 							   asciiBoard: data.ascii
 							   })
 			})
@@ -221,40 +220,50 @@ export class NextMove extends React.Component {
         console.log(this.props.ClickToMove);
         const piece = this.state.asciiBoard;
 		return (<div>
+
 			<div>
 				<TextField fullWidth 
-									label="Moves for White"
+									// label="Moves for White"
 									name="movesForW"
+									color="success"
 									value={this.state.fieldWhite.length>0 ? this.state.fieldWhite : ''}
-									disabled={!this.state.isBlackTurn}
+									disabled={this.state.isBlackTurn}
 									onChange={this.handleWhiteInput}  />
 			</div>
-			<Button onClick={this.moveWhite} disabled={!this.state.isBlackTurn} variant="outlined" color="primary">1st Player</Button>
-
+			<div class="button-container2">
+			<Button onClick={this.moveWhite} disabled={this.state.isBlackTurn} variant="outlined" color="primary">1st Player</Button>
+			</div>
 			<br/>
 
-			<div>
+			<div class="textfield">
 				<TextField fullWidth 
-									label="Moves for Black"
-									name="movesForB" 
+									// label="Moves for Black"
+									placeholder="Moves for Black"
+									name="movesForB"
+									color="info"
 									value={this.state.fieldBlack.length>0 ? this.state.fieldBlack : ''}
-									disabled={this.state.isBlackTurn}
+									disabled={!this.state.isBlackTurn}
 									onChange={this.handleBlackInput}  />
 			</div>
-			<Button onClick={this.moveBlack} disabled={this.state.isBlackTurn} variant="outlined" color="primary">2nd Player</Button>
-		
+			<div class="button-container2">
+			<Button onClick={this.moveBlack} disabled={!this.state.isBlackTurn} variant="outlined" color="primary">2nd Player</Button>
+			</div>
 			<div>
 				<br/>
 				{/* {this.state.playerMessage} */}
 				{this.state.toggleTurn ? <h5>It is White's Turn. Below are available moves:</h5> : <h5>It is Black's Turn. Below are available moves:</h5>}
 				<br/>
 				{this.state.moveList.length>0 ? this.state.moveList : null}
+				<ul>
+					{this.state.moveList.map(moves => (
+						<li>{moves}</li>
+					))}
+				</ul>
 				<br/>
 				{this.state.bestMove}
 				<br/>
 				{/* {this.state.asciiBoard} */}
-				{this.state.fenString}
-                <table>
+                <table class="board">
                     <tr>
                         <td>{piece[0]}</td>
                         <td>{piece[1]}</td>
@@ -407,11 +416,16 @@ export class NextMove extends React.Component {
 			</div>
 
             <ClickToMove bestMove={this.state.bestMove} hello={'hello'} />
+
+			{/* <ChessBoard fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"/> */}
+    		{/* document.getElementById("your-react-root") */}
 			{/* <ClickToMove boardWidth={chessboardSize} /> */}
 			{/* <ClickToMove  /> */}
 			</div>);
 	}
 
+
+	
 	render() {
 		// const isRunning = this.state.moveList.length != 0;
 		const game = {
@@ -423,11 +437,24 @@ export class NextMove extends React.Component {
 			isBlackTurn: this.state.isBlackTurn,
 			asciiBoard: this.state.asciiBoard
 		}
+
+		// render(
+		// 	<ChessBoard 
+		// 		fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+		// 		pieceTheme={meridaPieceTheme}
+		// 	/>,
+		// 	document.getElementById("root")
+		// );
+
 		return (<>
 			<br/>
-			<Button onClick={this.startGame} variant="outlined" disabled={this.state.gameStarted} color="primary">Start Chess Predictor</Button>
-			<Button onClick={this.endGame} variant="outlined" disabled={!this.state.gameStarted} color="primary">End Chess Predictor</Button>
-
+			<div class="button-container">
+			<Button  onClick={this.startGame} variant="outlined" disabled={this.state.gameStarted} color="primary">Start Chess Predictor</Button>
+			<div class="divider"/>
+			<Button  onClick={this.endGame} variant="outlined" disabled={!this.state.gameStarted} color="primary">End Chess Predictor</Button>
+			</div>
+			<br/>
+			<br/>
 			{/* { this.state.gameStarted ? <PythonEngine/> : null} */}
 			{ this.state.gameStarted && this.pythonEngine()}
 			{/* <div className="text-center mt-4">
