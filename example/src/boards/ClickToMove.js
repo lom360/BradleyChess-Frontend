@@ -5,7 +5,7 @@ import { Chessboard } from 'react-chessboard';
 
 import React from "react";
 
-export default function ClickToMove({bestMove, hello}) {
+export default function ClickToMove({fenString}) {
   const chessboardRef = useRef();
   const [game, setGame] = useState(new Chess());
 
@@ -107,16 +107,16 @@ export default function ClickToMove({bestMove, hello}) {
     });
   }
 
-  function nextMove(square) {
-    const colour = 'rgba(0, 0, 255, 0.4)';
-    setRightClickedSquares({
-      ...rightClickedSquares,
-      [{bestMove}]:
-        rightClickedSquares[{bestMove}] && rightClickedSquares[{bestMove}].backgroundColor === colour
-          ? undefined
-          : { backgroundColor: colour }
-    });
-  }
+  // function nextMove(square) {
+  //   const colour = 'rgba(0, 0, 255, 0.4)';
+  //   setRightClickedSquares({
+  //     ...rightClickedSquares,
+  //     [{bestMove}]:
+  //       rightClickedSquares[{bestMove}] && rightClickedSquares[{bestMove}].backgroundColor === colour
+  //         ? undefined
+  //         : { backgroundColor: colour }
+  //   });
+  // }
 
   return (
     <div>
@@ -126,7 +126,8 @@ export default function ClickToMove({bestMove, hello}) {
         animationDuration={200}
         arePiecesDraggable={false}
         // boardWidth={boardWidth}
-        position={game.fen()}
+        // position={game.fen()}
+        position={fenString}
         onSquareClick={onSquareClick}
         onSquareRightClick={onSquareRightClick}
         customBoardStyle={{

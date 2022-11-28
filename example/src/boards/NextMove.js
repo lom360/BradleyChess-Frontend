@@ -7,8 +7,12 @@ import Cookies from 'js-cookie';
 import TextField from '@mui/material/TextField';
 import ClickToMove from "./ClickToMove";
 // import { Chessboard } from "react-chessboard";
-import {ChessBoard} from "react-fen-chess-board";
+import FenBoard from "./FenBoard";
 import {render} from "react-dom";
+
+import Chess from 'chess.js';
+
+import { Chessboard } from 'react-chessboard';
 // import { responsiveFontSizes } from "@mui/material";
 // import {DataGrid} from '@mui/x-data-grid';
 // import { FaLess } from "react-icons/fa";
@@ -23,6 +27,7 @@ export class NextMove extends React.Component {
             fieldWhite: '',
 			fieldBlack: '',
 			gameStarted: false,
+			fenString: '',
 			// toggleTurn: true,
 			isBlackTurn: true,
 			asciiBoard: ''
@@ -52,6 +57,7 @@ export class NextMove extends React.Component {
 							//    playerMessage: data.player_turn,
 							   gameStarted: data.gameStarted,
 							   bestMove: data.best_move,
+							   fenString: data.fen_string,
 							   fieldWhite: data.best_move,
 							   asciiBoard: data.ascii
 							   })
@@ -149,6 +155,7 @@ export class NextMove extends React.Component {
 				this.setState({
 							   moveList: data.legal_moves,
 							   bestMove: data.best_move,
+							   fenString: data.fen_string,
 							   asciiBoard: data.ascii
 							   })
 				// if(!this.state.isBlackTurn) this.setState({fieldBlack: data.best_move});
@@ -205,23 +212,9 @@ export class NextMove extends React.Component {
     }
 
 	pythonEngine = () => {
-		// const [chessboardSize, setChessboardSize] = useState(undefined);
-
-		// useEffect(() => {
-		// 	function handleResize() {
-		// 	  const display = document.getElementsByClassName("container")[0];
-		// 	  setChessboardSize(display.offsetWidth - 20);
-		// 	}
-		
-		// 	window.addEventListener("resize", handleResize);
-		// 	handleResize();
-		// 	return () => window.removeEventListener("resize", handleResize);
-		//   }, []);
-        console.log(this.props.ClickToMove);
         const piece = this.state.asciiBoard;
 		return (<div>
-
-			<div>
+			{/* <div>
 				<TextField fullWidth 
 									// label="Moves for White"
 									name="movesForW"
@@ -232,7 +225,7 @@ export class NextMove extends React.Component {
 			</div>
 			<div class="button-container2">
 			<Button onClick={this.moveWhite} disabled={this.state.isBlackTurn} variant="outlined" color="primary">1st Player</Button>
-			</div>
+			</div> */}
 			<br/>
 
 			<div class="textfield">
@@ -246,24 +239,35 @@ export class NextMove extends React.Component {
 									onChange={this.handleBlackInput}  />
 			</div>
 			<div class="button-container2">
-			<Button onClick={this.moveBlack} disabled={!this.state.isBlackTurn} variant="outlined" color="primary">2nd Player</Button>
+			<Button onClick={this.moveBlack} disabled={!this.state.isBlackTurn} variant="outlined" color="primary">Process Move</Button>
 			</div>
 			<div>
 				<br/>
-				{/* {this.state.playerMessage} */}
-				{this.state.toggleTurn ? <h5>It is White's Turn. Below are available moves:</h5> : <h5>It is Black's Turn. Below are available moves:</h5>}
+				
+				<h4 class="players">The Agent has played: <span class="best-move">{this.state.bestMove}</span></h4>
 				<br/>
-				{this.state.moveList.length>0 ? this.state.moveList : null}
-				<ul>
+				{/* {this.state.moveList.length>0 ? this.state.moveList : null} */}
+				{/* <ul>
 					{this.state.moveList.map(moves => (
 						<li>{moves}</li>
 					))}
-				</ul>
+				</ul> */}
+
+				<h4 class="players">Player possible moves: </h4>
+				<table id="possible-moves">
+					<tr>
+					{this.state.moveList.map(moves => (
+							<td>{moves}</td>
+					))}
+					</tr>
+				</table>
+		
+
 				<br/>
-				{this.state.bestMove}
+				
 				<br/>
 				{/* {this.state.asciiBoard} */}
-                <table class="board">
+                {/* <table class="board">
                     <tr>
                         <td>{piece[0]}</td>
                         <td>{piece[1]}</td>
@@ -408,14 +412,19 @@ export class NextMove extends React.Component {
                         <td>{piece[14+112]}</td>
                         <td>{piece[15+112]}</td>
                     </tr>
-                </table>
+                </table> */}
 				<br/>
                 {/* {this.props.ClickToMove.moveFrom} */}
                 <br/>
                 <br/>
 			</div>
 
-            <ClickToMove bestMove={this.state.bestMove} hello={'hello'} />
+            {/* <ClickToMove fenString={this.state.fenString} /> */}
+
+			<FenBoard fenString={this.state.fenString}/>
+      {/* <Chessboard
+        width={400}
+        position={this.state.fenString}/> */}
 
 			{/* <ChessBoard fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"/> */}
     		{/* document.getElementById("your-react-root") */}
@@ -438,16 +447,9 @@ export class NextMove extends React.Component {
 			asciiBoard: this.state.asciiBoard
 		}
 
-		// render(
-		// 	<ChessBoard 
-		// 		fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-		// 		pieceTheme={meridaPieceTheme}
-		// 	/>,
-		// 	document.getElementById("root")
-		// );
-
 		return (<>
 			<br/>
+			{/* <FenBoard/> */}
 			<div class="button-container">
 			<Button  onClick={this.startGame} variant="outlined" disabled={this.state.gameStarted} color="primary">Start Chess Predictor</Button>
 			<div class="divider"/>
