@@ -25,7 +25,7 @@ function App() {
 
   return (
     <div className="container">
-      <h1>react-chessboard examples</h1>
+      <h1>Bradley Chess</h1>
       <NextMove  />
 
     </div>

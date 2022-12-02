@@ -36,6 +36,9 @@ export class NextMove extends React.Component {
 		}
 	}
 
+	sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
 
 	// getBoard = () => {
 	// 	fetch('/board').then(response => 
@@ -113,13 +116,50 @@ export class NextMove extends React.Component {
 		})
 	}
 
+	// moveBlack = () => {
+	// 	const token = Cookies.get('XSRF-TOKEN');
+	// 	fetch('/moveblack',
+	// 	  { 
+	// 		method: 'POST', 
+	// 		headers: { 'Content-Type': 'application/json',
+	// 				   'X-XSRF-TOKEN': token  }, 
+	// 				//    credentials: 'include',
+	// 		body: JSON.stringify(this.state.fieldBlack)
+	// 	  })
+	// 	.then(res => { 
+	// 		if (res.ok) {
+	// 		  this.setState({
+	// 						//  toggleTurn: !this.state.toggleTurn,
+	// 						//  isBlackTurn: !this.state.isBlackTurn,
+	// 						 fieldBlack: ''
+	// 						});////
+	// 		  this.getMoves();
+	// 		//   this.getAgent();`
+	// 		  toast.success("Move has been sent", {
+	// 			  position: toast.POSITION.BOTTOM_LEFT
+	// 		  });
+	// 		} else {
+	// 		  toast.error("Error when adding", {
+	// 			  position: toast.POSITION.BOTTOM_LEFT
+	// 		  });
+	// 		  console.error('Post http status =' + res.status);
+	// 		}})
+	// 	.catch(err => {
+	// 	  toast.error("Error when adding", {
+	// 			position: toast.POSITION.BOTTOM_LEFT
+	// 		});
+	// 		console.error(err);
+	// 	})
+	// }
+
 	moveBlack = () => {
 		const token = Cookies.get('XSRF-TOKEN');
 		fetch('/moveblack',
 		  { 
 			method: 'POST', 
 			headers: { 'Content-Type': 'application/json',
-					   'X-XSRF-TOKEN': token  }, 
+					   'X-XSRF-TOKEN': token  
+					}, 
 					//    credentials: 'include',
 			body: JSON.stringify(this.state.fieldBlack)
 		  })
@@ -130,23 +170,43 @@ export class NextMove extends React.Component {
 							//  isBlackTurn: !this.state.isBlackTurn,
 							 fieldBlack: ''
 							});////
-			  this.getMoves();
-			  toast.success("Move has been sent", {
-				  position: toast.POSITION.BOTTOM_LEFT
-			  });
+			//   this.playerMoves();
+			//   this.sleep(1500).then(r => {this.getMoves();})
+			//   this.getMoves();
 			} else {
-			  toast.error("Error when adding", {
-				  position: toast.POSITION.BOTTOM_LEFT
-			  });
 			  console.error('Post http status =' + res.status);
-			}})
-		.catch(err => {
-		  toast.error("Error when adding", {
-				position: toast.POSITION.BOTTOM_LEFT
-			});
-			console.error(err);
-		})
+			}}).then(this.playerMoves()).then(this.sleep(1500).then(r => {this.getMoves();}))
 	}
+
+	// moveAgent = () => {
+	// 	const token = Cookies.get('XSRF-TOKEN');
+	// 	fetch('/moveagent',
+	// 	  { 
+	// 		method: 'POST', 
+	// 		headers: { 'Content-Type': 'application/json',
+	// 				   'X-XSRF-TOKEN': token  }, 
+	// 				//    credentials: 'include',
+	// 		body: JSON.stringify(this.state.fieldWhite)
+	// 	  })
+	// 	.then(res => { 
+	// 		if (res.ok) {
+	// 		  this.getMoves();
+	// 		  toast.success("Move has been sent", {
+	// 			  position: toast.POSITION.BOTTOM_LEFT
+	// 		  });
+	// 		} else {
+	// 		  toast.error("Error when adding", {
+	// 			  position: toast.POSITION.BOTTOM_LEFT
+	// 		  });
+	// 		  console.error('Post http status =' + res.status);
+	// 		}})
+	// 	.catch(err => {
+	// 	  toast.error("Error when adding", {
+	// 			position: toast.POSITION.BOTTOM_LEFT
+	// 		});
+	// 		console.error(err);
+	// 	})
+	// }
 	
 	getMoves = () => {
 		fetch('/getmoves').then(response => 
@@ -161,6 +221,21 @@ export class NextMove extends React.Component {
 				// if(!this.state.isBlackTurn) this.setState({fieldBlack: data.best_move});
 				// else this.setState({fieldWhite: data.best_move});
 				this.setState({fieldWhite: data.best_move});
+			})
+		);
+	}
+
+	playerMoves = () => {
+		fetch('/playermoves').then(response => 
+			response.json().then(data => {
+				console.log(data);
+				this.setState({
+							   fenString: data.fen_string,
+							   asciiBoard: data.ascii
+							   })
+				// if(!this.state.isBlackTurn) this.setState({fieldBlack: data.best_move});
+				// else this.setState({fieldWhite: data.best_move});
+				// this.setState({fieldWhite: data.best_move});
 			})
 		);
 	}
@@ -228,6 +303,10 @@ export class NextMove extends React.Component {
 			</div> */}
 			<br/>
 
+			<h4 class="players">The Agent has played: <span class="best-move">{this.state.bestMove}</span></h4>
+			<br/>
+			<br/>
+
 			<div class="textfield">
 				<TextField fullWidth 
 									// label="Moves for Black"
@@ -236,7 +315,8 @@ export class NextMove extends React.Component {
 									color="info"
 									value={this.state.fieldBlack.length>0 ? this.state.fieldBlack : ''}
 									disabled={!this.state.isBlackTurn}
-									onChange={this.handleBlackInput}  />
+									onChange={this.handleBlackInput}  
+									/>
 			</div>
 			<div class="button-container2">
 			<Button onClick={this.moveBlack} disabled={!this.state.isBlackTurn} variant="outlined" color="primary">Process Move</Button>
@@ -244,8 +324,7 @@ export class NextMove extends React.Component {
 			<div>
 				<br/>
 				
-				<h4 class="players">The Agent has played: <span class="best-move">{this.state.bestMove}</span></h4>
-				<br/>
+
 				{/* {this.state.moveList.length>0 ? this.state.moveList : null} */}
 				{/* <ul>
 					{this.state.moveList.map(moves => (
@@ -421,7 +500,7 @@ export class NextMove extends React.Component {
 
             {/* <ClickToMove fenString={this.state.fenString} /> */}
 
-			<FenBoard fenString={this.state.fenString}/>
+			<FenBoard fenString={this.state.fenString} />
       {/* <Chessboard
         width={400}
         position={this.state.fenString}/> */}
@@ -451,9 +530,9 @@ export class NextMove extends React.Component {
 			<br/>
 			{/* <FenBoard/> */}
 			<div class="button-container">
-			<Button  onClick={this.startGame} variant="outlined" disabled={this.state.gameStarted} color="primary">Start Chess Predictor</Button>
+			<Button  onClick={this.startGame} variant="outlined" disabled={this.state.gameStarted} color="primary">Start Chess Game</Button>
 			<div class="divider"/>
-			<Button  onClick={this.endGame} variant="outlined" disabled={!this.state.gameStarted} color="primary">End Chess Predictor</Button>
+			<Button  onClick={this.endGame} variant="outlined" disabled={!this.state.gameStarted} color="primary">End Chess Game</Button>
 			</div>
 			<br/>
 			<br/>

@@ -7,7 +7,7 @@
     "rebuild": "cd ../package && npm run build && cd ../example && npm start",
     "lint": "eslint src"
   },
-  "proxy": "http://localhost:5000",
+  "proxy": "https://flask-bradley-chess.azurewebsites.net",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",

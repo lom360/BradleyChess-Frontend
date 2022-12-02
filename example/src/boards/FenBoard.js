@@ -21,6 +21,7 @@ export class FenBoard extends React.Component {
             <div>
               <Chessboard
                 width={400}
+                animationDuration={1000}
                 position={this.props.fenString}
               />
             </div>
