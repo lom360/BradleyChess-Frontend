@@ -28,7 +28,7 @@ function App() {
   // }
 
   return (
-    <div className="container">
+    <div>
       {/* <h1>Bradley Chess</h1> */}
       {/* <NextMove  /> */}
       <BrowserRouter>

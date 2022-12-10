@@ -1,8 +1,8 @@
 import { Outlet, Link, NavLink } from "react-router-dom";
 
 const Nav = () => {
-  return (
-    <>
+  return (<>
+    <div className="container">
       <nav>
         <ul>
           <li>
@@ -41,8 +41,8 @@ const Nav = () => {
         </ul>
       </nav>
 
-      <Outlet />
-    </>
+    </div>
+    <Outlet /></>
   )
 };
 

@@ -180,3 +180,26 @@ tr {
   flex-wrap: wrap;
   gap: 5px;
 }
+
+.developers {
+  text-align: left;
+  padding: 0px 100px;
+}
+
+.game-board {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  /* margin: auto; */
+}
+
+.user-controls {
+  width: 40%;
+  margin: auto;
+}
+
+.directions {
+  width: 10%;
+  background-color: #B58863;
+  margin-left: 100px;
+}

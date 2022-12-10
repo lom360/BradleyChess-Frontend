@@ -41,24 +41,26 @@ const Streamers = ({handleError, handlePlayer}) => {
 	}, [handleError])
 
 	return (<>
-		<h1>Streamers of Chess</h1>
-		<br/>
-		<div>
-			<div className="streamer-list text-center">
-				<Select 
-					options={options} 
-					onChange={setSelectedOption}
-					placeholder='Search Twitch Streamer' 
-					defaultValue={selectedOption} />
+		<div className='container'>
+			<h1>Streamers of Chess</h1>
+			<br/>
+			<div>
+				<div className="streamer-list text-center">
+					<Select 
+						options={options} 
+						onChange={setSelectedOption}
+						placeholder='Search Twitch Streamer' 
+						defaultValue={selectedOption} />
+				</div>
 			</div>
-		</div>
-		<br/>
-		<br/>
-		<div className="mt-5 row">
-			<Streamer 
-				handlePlayer={handlePlayer}
-				handleError={handleError} 
-				selectedOption={selectedOption} />
+			<br/>
+			<br/>
+			<div className="mt-5 row">
+				<Streamer 
+					handlePlayer={handlePlayer}
+					handleError={handleError} 
+					selectedOption={selectedOption} />
+			</div>
 		</div>
 </>)
 }

@@ -5,6 +5,7 @@ const Visualization = () => {
 
   return (
   <>
+    <div  className='container'>
     <h1> Visualizations</h1>
     
     {/* <iframe id="chess-data" src="assets/ChessData.pdf" width="850" height="1100"/> */}
@@ -41,7 +42,7 @@ const Visualization = () => {
     <img src="assets/ChessData-30.jpg"/>
     <img src="assets/ChessData-31.jpg"/>
     <img src="assets/ChessData-32.jpg"/>
- 
+    </div>
   </>
   );
 };
