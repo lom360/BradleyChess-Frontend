@@ -30,7 +30,8 @@ export class NextMove extends React.Component {
 			fenString: '',
 			// toggleTurn: true,
 			isBlackTurn: true,
-			asciiBoard: ''
+			asciiBoard: '',
+			roomKey: 0
 			// width: 530,
 			// height: 315,
 		}
@@ -53,7 +54,7 @@ export class NextMove extends React.Component {
 
 	startGame = () => {
 		console.log("Starting")
-		fetch('http://127.0.0.1:5000/startgame').then(response => 
+		fetch('https://flask-bradley-chess.azurewebsites.net/startgame').then(response => 
 			response.json().then(data => {
 				console.log(data);
 				this.setState({
@@ -63,14 +64,15 @@ export class NextMove extends React.Component {
 							   bestMove: data.best_move,
 							   fenString: data.fen_string,
 							   fieldWhite: data.best_move,
-							   asciiBoard: data.ascii
+							   asciiBoard: data.ascii,
+							   roomKey: data.roomKey
 							   })
 			})
 		);
 	}
 
 	endGame = () => {
-		fetch('http://127.0.0.1:5000/endgame').then(response => 
+		fetch(`https://flask-bradley-chess.azurewebsites.net/${this.state.roomKey}/endgame`).then(response => 
 			response.json().then(data => {
 				console.log(data);
 				this.setState({moveList: data.legal_moves,
@@ -85,7 +87,7 @@ export class NextMove extends React.Component {
 
 	moveWhite = () => {
 		const token = Cookies.get('XSRF-TOKEN');
-		fetch('http://127.0.0.1:5000/movewhite',
+		fetch(`https://flask-bradley-chess.azurewebsites.net/${this.state.roomKey}/movewhite`,
 		  { 
 			method: 'POST', 
 			headers: { 'Content-Type': 'application/json',
@@ -155,7 +157,7 @@ export class NextMove extends React.Component {
 
 	moveBlack = () => {
 		const token = Cookies.get('XSRF-TOKEN');
-		fetch('http://127.0.0.1:5000/moveblack',
+		fetch(`https://flask-bradley-chess.azurewebsites.net/${this.state.roomKey}/moveblack`,
 		  { 
 			method: 'POST', 
 			headers: { 'Content-Type': 'application/json',
@@ -163,6 +165,32 @@ export class NextMove extends React.Component {
 					}, 
 					//    credentials: 'include',
 			body: JSON.stringify(this.state.fieldBlack)
+		  })
+		.then(res => { 
+			if (res.ok) {
+			  this.setState({
+							//  toggleTurn: !this.state.toggleTurn,
+							//  isBlackTurn: !this.state.isBlackTurn,
+							 fieldBlack: ''
+							});////
+			  this.playerMoves();
+			//   this.sleep(1500).then(r => {this.getMoves();})
+			//   this.getMoves();
+			} else {
+			  console.error('Post http status =' + res.status);
+			}}).then(this.sleep(1500).then(r => {this.getMoves();}))
+	}
+
+	moveBlackWithBtn = (move) => {
+		const token = Cookies.get('XSRF-TOKEN');
+		fetch(`https://flask-bradley-chess.azurewebsites.net/${this.state.roomKey}/moveblack`,
+		  { 
+			method: 'POST', 
+			headers: { 'Content-Type': 'application/json',
+					   'X-XSRF-TOKEN': token  
+					}, 
+					//    credentials: 'include',
+			body: JSON.stringify(move)
 		  })
 		.then(res => { 
 			if (res.ok) {
@@ -210,7 +238,7 @@ export class NextMove extends React.Component {
 	// }
 	
 	getMoves = () => {
-		fetch('http://127.0.0.1:5000/getmoves').then(response => 
+		fetch(`https://flask-bradley-chess.azurewebsites.net/${this.state.roomKey}/getmoves`).then(response => 
 			response.json().then(data => {
 				console.log(data);
 				this.setState({
@@ -227,7 +255,7 @@ export class NextMove extends React.Component {
 	}
 
 	playerMoves = () => {
-		fetch('http://127.0.0.1:5000/playermoves').then(response => 
+		fetch(`https://flask-bradley-chess.azurewebsites.net/${this.state.roomKey}/playermoves`).then(response => 
 			response.json().then(data => {
 				console.log(data);
 				this.setState({
@@ -240,34 +268,6 @@ export class NextMove extends React.Component {
 			})
 		);
 	}
-
-	// getMovesBlack = () => {
-	// 	fetch('/getmoves').then(response => 
-	// 		response.json().then(data => {
-	// 			console.log(data);
-	// 			this.setState({
-	// 						   moveList: data.legal_moves,
-	// 						   fieldWhite: data.bestMove,
-	// 						   bestMove: data.best_move,
-	// 						   asciiBoard: data.ascii
-	// 						   })
-	// 		})
-	// 	);
-	// }
-	// componentDidMount() {
-	// 	document.title = "Bradley Chess"
-	// 	window.addEventListener("resize", this.resize);
-	// 	this.resize();
-	// }
-	// resize = () => {
-	// 	let display = document.getElementsByClassName("home-wrapper")[0]
-	//     this.setState({
-	//     	width: display.offsetWidth, height: display.offsetWidth/1.7777
-	//     });
-	// }
-	// componentWillUnmount() {
-	// 	window.removeEventListener("resize", this.resize);
-	// }
 
     handleWhiteInput = (event) => {
         // const fieldInput = this.state.fieldInput;
@@ -335,164 +335,24 @@ export class NextMove extends React.Component {
 
 				<h4 class="players">Player possible moves: </h4>
 				<table id="possible-moves">
-					<tr>
+					{/* <tr>
 					{this.state.moveList.map(moves => (
 							<td>{moves}</td>
 					))}
+					</tr> */}
+					<tr>
+					{this.state.moveList.map((moves) =>
+						<button class="moveBtn"
+						onClick={() => this.moveBlackWithBtn(moves)}
+						// style={btnStyle}
+						>
+						{moves}
+						</button> 
+					)}
 					</tr>
 				</table>
-		
-
 				<br/>
-				
 				<br/>
-				{/* {this.state.asciiBoard} */}
-                {/* <table class="board">
-                    <tr>
-                        <td>{piece[0]}</td>
-                        <td>{piece[1]}</td>
-                        <td>{piece[2]}</td>
-                        <td>{piece[3]}</td>
-                        <td>{piece[4]}</td>
-                        <td>{piece[5]}</td>
-                        <td>{piece[6]}</td>
-                        <td>{piece[7]}</td>
-                        <td>{piece[8]}</td>
-                        <td>{piece[9]}</td>
-                        <td>{piece[10]}</td>
-                        <td>{piece[11]}</td>
-                        <td>{piece[12]}</td>
-                        <td>{piece[13]}</td>
-                        <td>{piece[14]}</td>
-                        <td>{piece[15]}</td>
-                    </tr>
-                    <tr>
-                        <td>{piece[0+16]}</td>
-                        <td>{piece[1+16]}</td>
-                        <td>{piece[2+16]}</td>
-                        <td>{piece[3+16]}</td>
-                        <td>{piece[4+16]}</td>
-                        <td>{piece[5+16]}</td>
-                        <td>{piece[6+16]}</td>
-                        <td>{piece[7+16]}</td>
-                        <td>{piece[8+16]}</td>
-                        <td>{piece[9+16]}</td>
-                        <td>{piece[10+16]}</td>
-                        <td>{piece[11+16]}</td>
-                        <td>{piece[12+16]}</td>
-                        <td>{piece[13+16]}</td>
-                        <td>{piece[14+16]}</td>
-                        <td>{piece[15+16]}</td>
-                    </tr>
-                    <tr>
-                        <td>{piece[0+32]}</td>
-                        <td>{piece[1+32]}</td>
-                        <td>{piece[2+32]}</td>
-                        <td>{piece[3+32]}</td>
-                        <td>{piece[4+32]}</td>
-                        <td>{piece[5+32]}</td>
-                        <td>{piece[6+32]}</td>
-                        <td>{piece[7+32]}</td>
-                        <td>{piece[8+32]}</td>
-                        <td>{piece[9+32]}</td>
-                        <td>{piece[10+32]}</td>
-                        <td>{piece[11+32]}</td>
-                        <td>{piece[12+32]}</td>
-                        <td>{piece[13+32]}</td>
-                        <td>{piece[14+32]}</td>
-                        <td>{piece[15+32]}</td>
-                    </tr>
-                    <tr>
-                        <td>{piece[0+48]}</td>
-                        <td>{piece[1+48]}</td>
-                        <td>{piece[2+48]}</td>
-                        <td>{piece[3+48]}</td>
-                        <td>{piece[4+48]}</td>
-                        <td>{piece[5+48]}</td>
-                        <td>{piece[6+48]}</td>
-                        <td>{piece[7+48]}</td>
-                        <td>{piece[8+48]}</td>
-                        <td>{piece[9+48]}</td>
-                        <td>{piece[10+48]}</td>
-                        <td>{piece[11+48]}</td>
-                        <td>{piece[12+48]}</td>
-                        <td>{piece[13+48]}</td>
-                        <td>{piece[14+48]}</td>
-                        <td>{piece[15+48]}</td>
-                    </tr>
-                    <tr>
-                        <td>{piece[0+64]}</td>
-                        <td>{piece[1+64]}</td>
-                        <td>{piece[2+64]}</td>
-                        <td>{piece[3+64]}</td>
-                        <td>{piece[4+64]}</td>
-                        <td>{piece[5+64]}</td>
-                        <td>{piece[6+64]}</td>
-                        <td>{piece[7+64]}</td>
-                        <td>{piece[8+64]}</td>
-                        <td>{piece[9+64]}</td>
-                        <td>{piece[10+64]}</td>
-                        <td>{piece[11+64]}</td>
-                        <td>{piece[12+64]}</td>
-                        <td>{piece[13+64]}</td>
-                        <td>{piece[14+64]}</td>
-                        <td>{piece[15+64]}</td>
-                    </tr>
-                    <tr>
-                        <td>{piece[0+80]}</td>
-                        <td>{piece[1+80]}</td>
-                        <td>{piece[2+80]}</td>
-                        <td>{piece[3+80]}</td>
-                        <td>{piece[4+80]}</td>
-                        <td>{piece[5+80]}</td>
-                        <td>{piece[6+80]}</td>
-                        <td>{piece[7+80]}</td>
-                        <td>{piece[8+80]}</td>
-                        <td>{piece[9+80]}</td>
-                        <td>{piece[10+80]}</td>
-                        <td>{piece[11+80]}</td>
-                        <td>{piece[12+80]}</td>
-                        <td>{piece[13+80]}</td>
-                        <td>{piece[14+80]}</td>
-                        <td>{piece[15+80]}</td>
-                    </tr>
-                    <tr>
-                        <td>{piece[0+96]}</td>
-                        <td>{piece[1+96]}</td>
-                        <td>{piece[2+96]}</td>
-                        <td>{piece[3+96]}</td>
-                        <td>{piece[4+96]}</td>
-                        <td>{piece[5+96]}</td>
-                        <td>{piece[6+96]}</td>
-                        <td>{piece[7+96]}</td>
-                        <td>{piece[8+96]}</td>
-                        <td>{piece[9+96]}</td>
-                        <td>{piece[10+96]}</td>
-                        <td>{piece[11+96]}</td>
-                        <td>{piece[12+96]}</td>
-                        <td>{piece[13+96]}</td>
-                        <td>{piece[14+96]}</td>
-                        <td>{piece[15+96]}</td>
-                    </tr>
-                    <tr>
-                        <td>{piece[0+112]}</td>
-                        <td>{piece[1+112]}</td>
-                        <td>{piece[2+112]}</td>
-                        <td>{piece[3+112]}</td>
-                        <td>{piece[4+112]}</td>
-                        <td>{piece[5+112]}</td>
-                        <td>{piece[6+112]}</td>
-                        <td>{piece[7+112]}</td>
-                        <td>{piece[8+112]}</td>
-                        <td>{piece[9+112]}</td>
-                        <td>{piece[10+112]}</td>
-                        <td>{piece[11+112]}</td>
-                        <td>{piece[12+112]}</td>
-                        <td>{piece[13+112]}</td>
-                        <td>{piece[14+112]}</td>
-                        <td>{piece[15+112]}</td>
-                    </tr>
-                </table> */}
 				<br/>
                 {/* {this.props.ClickToMove.moveFrom} */}
                 <br/>
@@ -501,7 +361,7 @@ export class NextMove extends React.Component {
 
             {/* <ClickToMove fenString={this.state.fenString} /> */}
 
-			<FenBoard fenString={this.state.fenString} />
+			<FenBoard fenString={this.state.fenString} toSquare={'e5'} fromSquare={'d4'}/>
       {/* <Chessboard
         width={400}
         position={this.state.fenString}/> */}
